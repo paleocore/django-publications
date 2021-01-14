@@ -60,10 +60,10 @@ class Publication(models.Model):
 
 	type = models.ForeignKey(Type, on_delete=models.CASCADE)
 	citekey = models.CharField(max_length=512, blank=True, null=True,
-		help_text='BibTex citation key. Leave blank if unsure.')
+							   help_text='BibTex citation key. Leave blank if unsure.')
 	title = models.CharField(max_length=512)
 	authors = models.CharField(max_length=2048,
-		help_text='List of authors separated by commas or <i>and</i>.')
+							   help_text='List of authors separated by commas or <i>and</i>.')
 	year = models.PositiveIntegerField()
 	month = models.IntegerField(choices=MONTH_CHOICES, blank=True, null=True)
 	journal = models.CharField(max_length=256, blank=True)
@@ -75,20 +75,20 @@ class Publication(models.Model):
 	pages = PagesField(max_length=32, blank=True)
 	note = models.CharField(max_length=256, blank=True)
 	keywords = models.CharField(max_length=256, blank=True,
-		help_text='List of keywords separated by commas.')
+								help_text='List of keywords separated by commas.')
 	url = models.URLField(blank=True, verbose_name='URL',
-		help_text='Link to PDF or journal page.')
+						  help_text='Link to PDF or journal page.')
 	code = models.URLField(blank=True,
-		help_text='Link to page with code.')
+						   help_text='Link to page with code.')
 	pdf = models.FileField(upload_to='publications/', verbose_name='PDF', blank=True, null=True)
 	image = models.ImageField(upload_to='publications/images/', blank=True, null=True)
 	thumbnail = models.ImageField(upload_to='publications/thumbnails/', blank=True, null=True)
 	doi = models.CharField(max_length=128, verbose_name='DOI', blank=True)
 	external = models.BooleanField(default=False,
-		help_text='If publication was written in another lab, mark as external.')
+								   help_text='If publication was written in another lab, mark as external.')
 	abstract = models.TextField(blank=True)
 	isbn = models.CharField(max_length=32, verbose_name="ISBN", blank=True,
-		help_text='Only for a book.') # A-B-C-D
+							help_text='Only for a book.')  # A-B-C-D
 	lists = models.ManyToManyField(List, blank=True)
 
 	def __init__(self, *args, **kwargs):
@@ -103,7 +103,6 @@ class Publication(models.Model):
 		self.keywords = ', '.join(self.keywords).lower()
 
 		self._produce_author_lists()
-
 
 	def _produce_author_lists(self):
 		"""
@@ -206,32 +205,27 @@ class Publication(models.Model):
 		else:
 			self.authors = self.authors_list[0]
 
-
 	def __unicode__(self):
 		return self.__str__()
 
-
 	def __str__(self):
-		if len(self.title) < 64:
-			return self.title
+		if len(self.title) < 24:  # originally 64
+			return '[' + self.citekey + '] - ' + self.title
 		else:
-			index = self.title.rfind(' ', 40, 62)
+			index = self.title.rfind(' ', 10, 22)  # originally 40, 62
 
 			if index < 0:
-				return self.title[:61] + '...'
+				return '[' + self.citekey + '] - ' + self.title[:21] + '...'  # originally 41
 			else:
-				return self.title[:index] + '...'
-
+				return '[' + self.citekey + '] - ' + self.title[:index] + '...'
 
 	def keywords_escaped(self):
 		return [(keyword.strip(), urlquote_plus(keyword.strip()))
-			for keyword in self.keywords.split(',')]
-
+				for keyword in self.keywords.split(',')]
 
 	def authors_escaped(self):
 		return [(author, author.lower().replace(' ', '+'))
-			for author in self.authors_list]
-
+				for author in self.authors_list]
 
 	def key(self):
 		# this publication's first author
@@ -253,14 +247,11 @@ class Publication(models.Model):
 
 		return self.authors_list[0].split(' ')[-1] + str(self.year) + chr(char)
 
-
 	def title_bibtex(self):
 		return self.title.replace('%', r'\%')
 
-
 	def month_bibtex(self):
 		return self.MONTH_BIBTEX.get(self.month, '')
-
 
 	def month_long(self):
 		for month_int, month_str in self.MONTH_CHOICES:
@@ -268,10 +259,8 @@ class Publication(models.Model):
 				return month_str
 		return ''
 
-
 	def first_author(self):
 		return self.authors_list[0]
-
 
 	def journal_or_book_title(self):
 		if self.journal:
@@ -279,14 +268,11 @@ class Publication(models.Model):
 		else:
 			return self.book_title
 
-
 	def first_page(self):
 		return self.pages.split('-')[0]
 
-
 	def last_page(self):
 		return self.pages.split('-')[-1]
-
 
 	def z3988(self):
 		contextObj = ['ctx_ver=Z39.88-2004']
@@ -347,7 +333,6 @@ class Publication(models.Model):
 
 		return '&'.join(contextObj)
 
-
 	def clean(self):
 		if not self.citekey:
 			self._produce_author_lists()
@@ -359,7 +344,6 @@ class Publication(models.Model):
 		self.book_title = self.book_title.strip()
 		self.publisher = self.publisher.strip()
 		self.institution = self.institution.strip()
-
 
 	@staticmethod
 	def simplify_name(name):
