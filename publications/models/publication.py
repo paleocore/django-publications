@@ -83,7 +83,8 @@ class Publication(models.Model):
 	pdf = models.FileField(upload_to='publications/', verbose_name='PDF', blank=True, null=True)
 	image = models.ImageField(upload_to='publications/images/', blank=True, null=True)
 	thumbnail = models.ImageField(upload_to='publications/thumbnails/', blank=True, null=True)
-	doi = models.CharField(max_length=128, verbose_name='DOI', blank=True)
+	doi = models.CharField(max_length=128, verbose_name='DOI', blank=True,
+                           help_text= "e.g. 10.1073/pnas.2006221117")
 	external = models.BooleanField(default=False,
 								   help_text='If publication was written in another lab, mark as external.')
 	abstract = models.TextField(blank=True)
