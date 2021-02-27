@@ -32,6 +32,7 @@ class PublicationAdmin(admin.ModelAdmin):
     list_display_links = ('title',)
     change_list_template = 'admin/publications/publication_change_list.html'
     search_fields = ('title', 'journal', 'authors', 'keywords', 'year')
+    ordering = ('citekey',)
     fieldsets = (
         (None, {'fields':
                     ('type', 'title', 'authors', 'year', 'month')}),
@@ -58,7 +59,7 @@ class PublicationAdmin(admin.ModelAdmin):
         if obj.doi:
             # context_url = reverse('admin:origins_context_change', args=(obj.context.id,))
             doi_url = "https://doi.org/{}".format(obj.doi)
-            return format_html('<a href={}>{}</a>'.format(doi_url, doi_url))
+            return format_html('<a target="_blank" rel="noopener noreferrer" href={}>{}</a>'.format(doi_url, doi_url))
         else:
             return None
 
