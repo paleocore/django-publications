@@ -31,7 +31,7 @@ class PublicationAdmin(admin.ModelAdmin):
                     'doi_link', 'pdf')
     list_display_links = ('title',)
     change_list_template = 'admin/publications/publication_change_list.html'
-    search_fields = ('title', 'journal', 'authors', 'keywords', 'year')
+    search_fields = ('citekey', 'title', 'journal', 'authors', 'keywords', 'year')
     ordering = ('citekey',)
     fieldsets = (
         (None, {'fields':
