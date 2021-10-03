@@ -1,0 +1,34 @@
+
+{% block content %}
+  <div id="content" class="grid-container">
+    <div class="grid-x grid-margin-x">
+      <div id="standard_page" class="cell">
+        {% if self.title %} <h1>{{ self.title }}</h1>
+        {% else %}<h1>Origins Bib</h1>
+        {% endif %}
+        <div class="special_links">
+          <a href="?plain" class="button">Plain text</a>
+          <a href="?ris" class="button">RIS</a>
+          <a href="?bibtex" class="button">BibTex</a>
+        </div>
+        {% if self.intro %}
+        {{ self.intro | safe}}
+        {% endif %}
+        <hr/>
+        <ol>
+          {% for citekey, publications in citekeys %}
+          <li>
+          <div{% if not forloop.last %} style="margin-bottom: 30px;"{% endif %}>
+            {% for publication in publications %}
+            <div{% if not forloop.last %} style="margin-bottom: 20px;"{% endif %}>
+            {% include "publications/publication.html" %}
+            </div>
+            {% endfor %}
+          </div>
+          </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
+  </div>
+{% endblock %}
