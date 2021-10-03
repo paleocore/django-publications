@@ -13,6 +13,7 @@ from publications.fields import PagesField
 from publications.models import Type, List
 from string import ascii_uppercase
 
+
 if 'django.contrib.sites' in settings.INSTALLED_APPS:
 	from django.contrib.sites.models import Site
 
@@ -354,3 +355,6 @@ class Publication(models.Model):
 		name = name.replace(u'ü', u'ue')
 		name = name.replace(u'ß', u'ss')
 		return name
+
+
+

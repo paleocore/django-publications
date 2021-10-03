@@ -27,12 +27,16 @@
 	{{ publication.year }}{% if publication.isbn %},
 	ISBN {{ publication.isbn }}{% endif %}</i><br />
 {% endif %}
+
+{% comment %}}
 {% if publication.keywords %}
 	{% for keyword, keyword_escaped in publication.keywords_escaped %}
 	<a class="keyword" href="{% url 'publications:keyword' keyword_escaped %}">{{ keyword }}</a>
 	{% endfor %}
 	<br />
 {% endif %}
+{% endcomment %}
+
 {% if publication.code %}<a class="link" href="{{ publication.code }}">Code</a>,{% endif %}
 {% if publication.url %}<a class="link" rel="external" href="{{ publication.url }}">URL</a>,{% endif %}
 {% if publication.doi %}<a class="link" rel="external" href="http://dx.doi.org/{{ publication.doi }}">DOI</a>,{% endif %}
