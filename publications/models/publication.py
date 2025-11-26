@@ -276,6 +276,92 @@ class Publication(models.Model):
 	def last_page(self):
 		return self.pages.split('-')[-1]
 
+	def render_reference(self, media_url="", include_links=True):
+		"""
+		Return a formatted reference string for this Publication.
+		:param media_url: Optional prefix for file links.
+		:param include_links: Include DOI, PDF, etc.
+		"""
+		authors_escaped = self.authors_escaped()
+		n_authors = len(authors_escaped)
+		if n_authors > 8:
+			author_str = ', '.join(a for a, _ in authors_escaped[:8]) + ', et al.'
+		else:
+			author_parts = []
+			for i, (author, _) in enumerate(authors_escaped):
+				if i == 0:
+					author_parts.append(author)
+				elif i == n_authors - 1:
+					if n_authors > 2:
+						author_parts.append(", and ")
+					else:
+						author_parts.append(" and ")
+					author_parts.append(author)
+				else:
+					author_parts.append(", ")
+					author_parts.append(author)
+			author_str = "".join(author_parts)
+		lines = []
+
+		# Authors and year first, then title
+		author_line = author_str
+		if self.year:
+			author_line += f" ({self.year})"
+		lines.append(author_line)
+
+		lines.append(self.title)
+
+		if self.journal:
+			journal_info = self.journal
+			if self.note:
+				journal_info += f" ({self.note})"
+			if self.volume:
+				journal_info += f", {self.volume}"
+				if self.number:
+					journal_info += f"({self.number})"
+			if self.pages:
+				journal_info += f", {self.pages}"
+			lines.append(journal_info)
+		else:
+			book_info = ""
+			if self.book_title:
+				book_info += self.book_title
+				if self.note:
+					book_info += f" ({self.note})"
+			if self.publisher:
+				if book_info:
+					book_info += ", "
+				book_info += self.publisher
+			if self.institution:
+				if book_info:
+					book_info += ", "
+				book_info += self.institution
+			if self.isbn:
+				if book_info:
+					book_info += ", "
+				book_info += f"ISBN {self.isbn}"
+			lines.append(book_info)
+
+		if include_links:
+			links = []
+			if self.code:
+				links.append(f"Code: {self.code}")
+			if self.url:
+				links.append(f"URL: {self.url}")
+			if self.doi:
+				links.append(f"DOI: https://doi.org/{self.doi}")
+			if not self.journal and self.isbn:
+				links.append(f"ISBN Lookup: http://isbndb.com/search/all?query={self.isbn}")
+			if self.pdf and hasattr(self.pdf, 'url'):
+				links.append(f"PDF: {media_url or ''}{self.pdf.url.lstrip('/')}")
+			if links:
+				lines.append("; ".join(links))
+
+		# Remove potential empty book_info line
+		lines = [line for line in lines if line.strip()]
+
+		return ". ".join(lines).strip()
+
 	def z3988(self):
 		contextObj = ['ctx_ver=Z39.88-2004']
 
@@ -355,6 +441,5 @@ class Publication(models.Model):
 		name = name.replace(u'ü', u'ue')
 		name = name.replace(u'ß', u'ss')
 		return name
-
 
 
