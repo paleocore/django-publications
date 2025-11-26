@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from publications.models import Publication
 
 class ReferenceSerializer(serializers.ModelSerializer):
 	bibliographic_reference = serializers.SerializerMethodField()
