@@ -58,7 +58,7 @@ class OrderedModel(models.Model):
         order_with_respect_to = self.order_with_respect_to
         if order_with_respect_to:
             value = self._get_order_with_respect_to()
-            qs = qs.filter((order_with_respect_to, value))
+            qs = qs.filter(**{order_with_respect_to: value})
         return qs
 
     def save(self, *args, **kwargs):

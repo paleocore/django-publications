@@ -1,10 +1,9 @@
 from django.db import models
-from wagtail.core.models import Page, Orderable
-from wagtail.core.fields import RichTextField, StreamField
+from wagtail.models import Page, Orderable
+from wagtail.fields import RichTextField, StreamField
 from wagtail.search import index
-from wagtail.admin.edit_handlers import (
-    FieldPanel, MultiFieldPanel, InlinePanel, PageChooserPanel,
-    StreamFieldPanel)
+from wagtail.admin.panels import (
+    FieldPanel, MultiFieldPanel, InlinePanel, PageChooserPanel)
 from publications.models import Publication
 
 # Wagtail models
@@ -32,8 +31,7 @@ class CiteIndexPage(Page):
         return context
 
 
-CiteIndexPage.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('subtitle', classname="full title"),
-    FieldPanel('intro', classname="full"),
+CiteIndexPage.content_panels = Page.content_panels + [
+    FieldPanel('subtitle'),
+    FieldPanel('intro'),
 ]

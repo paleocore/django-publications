@@ -3,11 +3,6 @@ __author__ = 'Lucas Theis <lucas@theis.io>'
 __docformat__ = 'epytext'
 
 from django.urls import include, path, re_path
-try:
-    from django.conf.urls import url
-except ImportError:
-    from django.conf.urls.defaults import url
-
 from publications import views
 
 app_name = 'publications'

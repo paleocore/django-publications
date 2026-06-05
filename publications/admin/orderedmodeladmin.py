@@ -54,20 +54,15 @@ class OrderedModelAdmin(admin.ModelAdmin):
                     model=self.model._meta.model_name)
 
     def get_urls(self):
-        try:
-            from django.conf.urls import url
-        except ImportError:
-            from django.conf.urls.defaults import url
+        from django.urls import path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
         return [
-            url(r'^(.+)/move-(up)/$', wrap(self.move_view),
-                name='{app}_{model}_order_up'.format(**self.get_model_info())),
-            url(r'^(.+)/move-(down)/$', wrap(self.move_view),
-                name='{app}_{model}_order_down'.format(**self.get_model_info())),
+            path('<path:object_id>/move-<str:direction>/', wrap(self.move_view),
+                name='{app}_{model}_order'.format(**self.get_model_info())),
         ] + super(OrderedModelAdmin, self).get_urls()
 
     def _get_changelist(self, request):
@@ -104,10 +99,9 @@ class OrderedModelAdmin(admin.ModelAdmin):
             'module_name': self.model._meta.model_name,
             'object_id': obj.id,
             'urls': {
-                'up': reverse("admin:{app}_{model}_order_up".format(**self.get_model_info()), args=[obj.id, 'up']),
-                'down': reverse("admin:{app}_{model}_order_down".format(**self.get_model_info()), args=[obj.id, 'down']),
+                'up': reverse("admin:{app}_{model}_order".format(**self.get_model_info()), args=[obj.id, 'up']),
+                'down': reverse("admin:{app}_{model}_order".format(**self.get_model_info()), args=[obj.id, 'down']),
             },
             'query_string': self.request_query_string
         })
-    move_up_down_links.allow_tags = True
     move_up_down_links.short_description = _(u'Move')

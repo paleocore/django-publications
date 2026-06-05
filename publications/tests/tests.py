@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.test import TestCase
-from django.contrib.auth.models import User
+from django.test import TestCase, override_settings
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.db import transaction
 from django.template import Template, RequestContext
@@ -8,9 +8,11 @@ from django.http import HttpRequest
 from publications.models import Publication, Type, CustomLink, List
 from publications.templatetags.publication_extras import tex_parse
 
+User = get_user_model()
+
+@override_settings(ROOT_URLCONF='publications.tests.urls')
 class Tests(TestCase):
 	fixtures = ['initial_data.json', 'test_data.json']
-	urls = 'publications.tests.urls'
 
 	def setUp(self):
 		User.objects.create_superuser('admin', 'admin@test.de', 'admin')

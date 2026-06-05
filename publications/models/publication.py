@@ -7,7 +7,7 @@ __docformat__ = 'epytext'
 import os
 
 from django.db import models
-from django.utils.http import urlquote_plus
+from urllib.parse import quote_plus as urlquote_plus
 from django.conf import settings
 from publications.fields import PagesField
 from publications.models import Type, List
@@ -206,9 +206,6 @@ class Publication(models.Model):
 			self.authors = ' and '.join(self.authors_list)
 		else:
 			self.authors = self.authors_list[0]
-
-	def __unicode__(self):
-		return self.__str__()
 
 	def __str__(self):
 		if len(self.title) < 24:  # originally 64
