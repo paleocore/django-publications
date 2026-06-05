@@ -68,12 +68,21 @@ class OrderedModelAdmin(admin.ModelAdmin):
     def _get_changelist(self, request):
         list_display = self.get_list_display(request)
         list_display_links = self.get_list_display_links(request, list_display)
+        sortable_by = self.get_sortable_by(request)
 
-        cl = ChangeList(request, self.model, list_display,
-                        list_display_links, self.list_filter, self.date_hierarchy,
-                        self.search_fields, self.list_select_related,
-                        self.list_per_page, self.list_max_show_all, self.list_editable,
-                        self, sortable_by=self.list_display)
+        # get_search_help_text is available in Django 5.0+
+        if hasattr(self, 'get_search_help_text'):
+            search_help_text = self.get_search_help_text(request)
+        else:
+            search_help_text = ''
+
+        cl = ChangeList(
+            request, self.model, list_display,
+            list_display_links, self.list_filter, self.date_hierarchy,
+            self.search_fields, self.list_select_related,
+            self.list_per_page, self.list_max_show_all, self.list_editable,
+            self, sortable_by=sortable_by, search_help_text=search_help_text
+        )
 
         return cl
 
